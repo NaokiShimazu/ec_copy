@@ -3,7 +3,15 @@
 @section('title', 'あなたの購入履歴')
 
 @section('content')
-<h1>あなたの購入履歴</h1>
+@if ($user === 'admin')
+
+<h1>すべての購入履歴</h1>
+
+@else    
+
+<h1>{{ $user }}さんの購入履歴</h1>
+
+@endif
 
 <a href="{{ route('tool') }}">管理ページへ</a>
 

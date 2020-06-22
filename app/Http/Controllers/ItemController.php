@@ -24,7 +24,6 @@ class ItemController extends Controller
     public function display()
     {
         $items = Item::all();
-
         return view('tool', compact('items'));
     }
 

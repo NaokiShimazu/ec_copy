@@ -10,6 +10,7 @@
     <button type="submit">ログアウト</button>
 </form>
 
+<a href="{{ route('result') }}">購入履歴へ</a>
 
 @foreach ($errors->all() as $error)
 <p>{{ $error }}</p>

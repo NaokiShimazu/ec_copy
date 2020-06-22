@@ -10,8 +10,14 @@ class ResultController extends Controller
 {
     public function display()
     {
-        $results = Result::where('user_id', Auth::user()->id)->latest()->get();
+        $user = Auth::user()->name;     
 
-        return view('result', compact('results'));
+        if ($user === 'admin'){
+            $results = Result::all();
+        } else{
+            $results = Result::where('user_id', Auth::user()->id)->latest()->get();
+        }
+
+        return view('result', compact('results', 'user'));
     }
 }

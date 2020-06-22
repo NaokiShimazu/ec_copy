@@ -41,6 +41,7 @@ class CartController extends Controller
 
     public function display()
     {
+
         $carts = Cart::getUserCart();
         $sum = Cart::getSum($carts);
         return view('cart', compact('carts', 'sum'));
