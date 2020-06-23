@@ -60,9 +60,9 @@
         <tr>
             <td><img src="{{ asset('storage/photos/' . $item->image) }}"></td>
             <td>{{ $item->name }}</td>
-            <td>{{ $item->price }}</td>
+            <td class="price">{{ $item->price }}円</td>
             <td>
-                <form action="{{ route('tool.update', ['item' => $item->id]) }}" method="post">
+                <form action="{{ route('tool.update', ['item_id' => $item->id]) }}" method="post">
                     {{ csrf_field() }}
                     {{ method_field('put') }}
                     <input type="number" name="new_quantity" value="{{ $item->stock }}">
@@ -71,14 +71,14 @@
             </td>
             <td>
                 {{ $item->status==true ? '公開' : '非公開' }}
-                <form action="{{ route('tool.switch', ['item' => $item->id]) }}" method="post">
+                <form action="{{ route('tool.switch', ['item_id' => $item->id]) }}" method="post">
                     {{ csrf_field() }}
                     {{ method_field('put') }}
                     <input type="submit" value="{{ $item->status==true ? '非公開にする' : '公開にする' }}">
                 </form>
             </td>
             <td>
-                <form action="{{ route('tool.delete', ['item' => $item->id]) }}" method="post">
+                <form action="{{ route('tool.delete', ['item_id' => $item->id]) }}" method="post">
                     {{ csrf_field() }}
                     {{ method_field('delete') }}
                     <input type="submit" value="削除する">

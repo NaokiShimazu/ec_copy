@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\InsertRequest;
 use App\Http\Requests\UpdateRequest;
-use App\Item;
+use App\Services\ItemService;
+use App\Repositories\ItemRepository;
 
 class ItemController extends Controller
 {
@@ -14,51 +15,44 @@ class ItemController extends Controller
         $this->middleware('auth');
     }
     
-    public static function run($function)
-    {
-        if ($function){
-            return session()->flash('success');
-        }
-    }
-
     public function display()
     {
-        $items = Item::all();
+        $items = ItemRepository::getAllItems();
 
         return view('tool', compact('items'));
     }
 
     public function insert(InsertRequest $request)
     {
-        self::run(Item::insertNewItem($request));
+        ItemService::insertNewItem($request);
 
         return redirect(route('tool'));
     }
 
-    public function update(Item $item, UpdateRequest $request)
+    public function update(UpdateRequest $request)
     {
-        self::run($item->updateStock($request->new_quantity));
+        ItemService::updateStock($request);
 
         return redirect(route('tool'));
     }
 
-    public function switch(Item $item)
+    public function switch($item_id)
     {
-        self::run($item->switchStatus());
+        ItemService::switchStatus($item_id);
 
         return redirect(route('tool'));
     }
 
-    public function destroy(Item $item)
+    public function destroy($item_id)
     {
-        self::run($item->destroyItem());
+        ItemService::destroyItem($item_id);
 
         return redirect(route('tool'));
     }
 
     public function show()
     {
-        $items = Item::getOpenItems();
+        $items = ItemRepository::getOpenItems();
 
         return view('index', compact('items'));
     }

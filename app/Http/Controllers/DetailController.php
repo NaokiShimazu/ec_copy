@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Detail;
+use App\Services\DetailService;
+use App\Repositories\DetailRepository;
 
 class DetailController extends Controller
 {
     public function display($result_id)
     {
-        $details = Detail::where('result_id', $result_id)->get();
+        $details = DetailRepository::getDetails($result_id);
 
         return view('detail', compact('details'));
     }

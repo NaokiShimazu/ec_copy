@@ -9,4 +9,7 @@
 @empty
 <p>エラーはありません</p>
 @endforelse
+
+<a href="{{ route('cart') }}">カートへ戻る</a>
+
 @endsection

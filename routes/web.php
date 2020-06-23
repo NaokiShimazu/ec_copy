@@ -19,11 +19,11 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/tool', 'ItemController@display')->name('tool');
+Route::get('/tool', 'ItemController@display')->middleware('admin')->name('tool');
 Route::post('/tool/insert', 'ItemController@insert')->name('tool.insert');
-Route::put('/tool/update/{item}', 'ItemController@update')->name('tool.update');
-Route::put('/tool/switch/{item}', 'ItemController@switch')->name('tool.switch');
-Route::delete('/tool/delete/{item}', 'ItemController@destroy')->name('tool.delete');
+Route::put('/tool/update/{item_id}', 'ItemController@update')->name('tool.update');
+Route::put('/tool/switch/{item_id}', 'ItemController@switch')->name('tool.switch');
+Route::delete('/tool/delete/{item_id}', 'ItemController@destroy')->name('tool.delete');
 
 Route::get('/index', 'ItemController@show')->name('index');
 
