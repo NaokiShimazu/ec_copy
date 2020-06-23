@@ -3,20 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Result;
 use \Auth;
+use App\Services\ResultService;
 
 class ResultController extends Controller
 {
     public function display()
     {
         $user = Auth::user()->name;     
-
-        if ($user === 'admin'){
-            $results = Result::all();
-        } else{
-            $results = Result::where('user_id', Auth::user()->id)->latest()->get();
-        }
+        $results = ResultService::getResults($user);
 
         return view('result', compact('results', 'user'));
     }

@@ -5,12 +5,14 @@
 @section('content')
 <h1>カート内の商品一覧</h1>
 
-<form action="{{ url('/logout') }}" method="post">
-    {{ csrf_field() }}
-    <button type="submit">ログアウト</button>
-</form>
+<section class="link">
+    <form action="{{ url('/logout') }}" method="post" class="flex">
+        {{ csrf_field() }}
+        <button type="submit">ログアウト</button>
+    </form>
 
-<a href="{{ route('result') }}">購入履歴へ</a>
+    <a href="{{ route('result') }}" class="flex">購入履歴へ</a>
+</section>
 
 @foreach ($errors->all() as $error)
 <p>{{ $error }}</p>
@@ -32,7 +34,7 @@
     <tr>
         <td><img src="{{ asset('storage/photos/' . $cart->item->image) }}"></td>
         <td>{{ $cart->item->name }}</td>
-        <td>{{ $cart->item->price }}円</td>
+        <td class="price">{{ $cart->item->price }}円</td>
         <td>
             <form action="{{ route('cart.update', ['item_id' => $cart->item->id]) }}" method="post">
                 {{ csrf_field() }}
@@ -54,14 +56,16 @@
     @endforelse
 </table>
 
-<div>
-    合計: {{ $sum }}円
-</div>
+<section class="right">
+    <div class="sum">
+        合計: <span class="price">{{ $sum }}円</span>
+    </div>
 
-<div>
-    <form action="{{ route('finish') }}" method="post">
-        {{ csrf_field() }}
-        <input type="submit" value="購入する">
-    </form>
-</div>
+    <div>
+        <form action="{{ route('finish') }}" method="post">
+            {{ csrf_field() }}
+            <input type="submit" value="購入する">
+        </form>
+    </div>
+</section>
 @endsection
