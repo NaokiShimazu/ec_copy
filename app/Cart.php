@@ -3,9 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use \Auth;
-use App\Item;
-use Illuminate\Support\Facades\DB;
 
 class Cart extends Model
 {

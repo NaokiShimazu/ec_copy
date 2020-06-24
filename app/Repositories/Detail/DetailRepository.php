@@ -1,11 +1,11 @@
 <?php
-namespace App\Repositories;
+namespace App\Repositories\Detail;
 
 use App\Detail;
 
-class DetailRepository
+class DetailRepository implements DetailRepositoryInterface
 {
-    public static function createDetail($result_id, $cart)
+    public function createDetail($result_id, $cart)
     {
         $detail = new Detail;
         $detail->result_id = $result_id;
@@ -18,9 +18,9 @@ class DetailRepository
         return $detail;
     }
     
-    public static function getDetails($result_id)
+    public function selectDetails($result_id)
     {
-        return Detail::where('result_id', $result_id)->get();
+        return Detail::where('result_id', $result_id);
     }
 
 }

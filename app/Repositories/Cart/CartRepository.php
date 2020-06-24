@@ -1,10 +1,10 @@
 <?php
-namespace App\Repositories;
+namespace App\Repositories\Cart;
 
 use App\Cart;
-use \Auth;
+use Illuminate\Support\Facades\Auth;
 
-class CartRepository
+class CartRepository implements CartRepositoryInterface
 {
     public function getItemInCart($item_id)
     {
@@ -32,11 +32,6 @@ class CartRepository
         return Cart::where('user_id', Auth::user()->id);
     }
 
-    public function getUserCart()
-    {
-        return $this->selectUserCart()->get();
-    }
-
     public function getSum()
     {
         return $this->selectUserCart()
@@ -44,19 +39,20 @@ class CartRepository
                     ->selectRaw('items.price*carts.amount as subtotal')
                     ->get()
                     ->sum('subtotal');
+
     }
 
-    public static function updateCartAmount($item_id, $amount)
+    public function updateCartAmount($item_id, $amount)
     {
-        return self::getItemInCart($item_id)->update(compact('amount'));
+        return $this->getItemInCart($item_id)->update(compact('amount'));
     }
 
-    public static function deleteCartItem($item_id)
+    public function deleteCartItem($item_id)
     {
-        return self::getItemInCart($item_id)->delete();
+        return $this->getItemInCart($item_id)->delete();
     }
 
-    public static function deleteFromCart($cart)
+    public function deleteFromCart($cart)
     {
         return $cart->delete();
     }

@@ -12,8 +12,8 @@
 
 <a href="{{ route('index') }}">商品一覧へ</a>
 
-@foreach ($err_msgs as $err_msg)
-<p>在庫不足のため購入できませんでした: {{ $err_msg }}</p>
+@foreach ($error_items as $error_item)
+<p>在庫不足のため購入できませんでした: {{ $error_item }}</p>
 @endforeach
 
 <table>

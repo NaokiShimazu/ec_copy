@@ -4,62 +4,55 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateRequest;
-use Illuminate\Support\Facades\DB;
-use \Auth;
-
 use App\Services\CartService;
 use App\Services\ResultService;
-use App\Repositories\CartRepository;
-
 
 class CartController extends Controller
 {
-
-    public function __construct()
+    public function __construct(CartService $cart_service, ResultService $result_service)
     {
         $this->middleware('auth');
+        $this->cart_service = $cart_service;
+        $this->result_service = $result_service;
     }
     
     public function add($item_id)
     {
-        $cart = CartService::addToCart($item_id);
+        $this->cart_service->addToCart($item_id);
 
         return redirect(route('index'));
     }
 
     public function display()
     {   
-        $repository = new CartRepository;
+        $carts = $this->cart_service->getUserCart();
+        $sum = $this->cart_service->getCartSum();
 
-        $carts = $repository->getUserCart();
-        $sum = $repository->getSum();
         return view('cart', compact('carts', 'sum'));
     }
 
     public function update($item_id, UpdateRequest $request)
     {
-        CartService::updateAmount($item_id, $request->new_quantity);
+        $this->cart_service->updateAmount($item_id, $request->new_quantity);
 
         return redirect(route('cart'));
     }
 
     public function destroy($item_id)
     {
-        $cart = CartService::destroyFromCart($item_id);
+        $cart = $this->cart_service->destroyFromCart($item_id);
 
         return redirect(route('cart'));
     }
 
     public function purchase()
     {
-        $repository = new CartRepository;
+        $carts = $this->cart_service->getUserCart();
+        $error_items = $this->cart_service->checkStock($carts);
+        $sum = $this->cart_service->getCartSum();
+        $this->result_service->createResultAndDetail($carts, $sum);
+        $purchases = $this->cart_service->purchaseItem($carts);
 
-        $carts = $repository->getUserCart();
-        $err_msgs = CartService::checkStock($carts);
-        $sum = $repository->getSum();
-        ResultService::createResultAndDetail($carts, $sum);
-        $purchases = CartService::purchaseItem($carts);
-
-        return view('finish', compact('purchases', 'sum', 'err_msgs'));
+        return view('finish', compact('purchases', 'sum', 'error_items'));
     }
 }
