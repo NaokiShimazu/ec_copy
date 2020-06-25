@@ -13,7 +13,7 @@ class DetailController extends Controller
         $this->detail_service = $detail_service;
     }
 
-    public function display($result_id)
+    public function display(int $result_id): object
     {
         $details = $this->detail_service->getDetails($result_id);
 

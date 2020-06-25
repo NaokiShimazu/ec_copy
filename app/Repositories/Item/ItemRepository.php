@@ -5,53 +5,56 @@ use App\Item;
 
 class ItemRepository implements ItemRepositoryInterface
 {
-    public function getAll()
+    public function __construct(Item $item)
     {
-        return Item::all();
+        $this->item = $item;
     }
 
-    public function createNewItem($request)
+    public function getAll(): object
     {
-        $item = new Item;
-        $item->name = $request->name;
-        $item->price = $request->price;
-        $item->stock = $request->stock;
-        $item->status = $request->status;
-        $item->image = $request->image;
-
-        return $item->save();
+        return $this->item->all();
     }
 
-    public function getItem($item_id)
+    public function createNewItem($request): void
     {
-        return Item::find($item_id);
+        $this->item->name = $request->name;
+        $this->item->price = $request->price;
+        $this->item->stock = $request->stock;
+        $this->item->status = $request->status;
+        $this->item->image = $request->image;
+        $this->item->save();
     }
 
-    public function updateItemStock($request)
+    public function getItem(int $item_id): object
     {
-        return $this->getItem($request->item_id)
+        return $this->item->find($item_id);
+    }
+
+    public function updateItemStock(object $request): void
+    {
+        $this->getItem($request->item_id)
                    ->update(['stock' => $request->new_quantity]);
     }
 
-    public function switchItemStatus($item_id)
+    public function switchItemStatus(int $item_id): void
     {
         $item = $this->getItem($item_id);
 
-        return $item->update(['status' => !$item->status]);
+        $item->update(['status' => !$item->status]);
     }
 
-    public function deleteItem($item_id)
+    public function deleteItem(int $item_id): void
     {
-        return $this->getItem($item_id)->delete();
+        $this->getItem($item_id)->delete();
     }
 
-    public static function getOpen()
+    public function getOpen(): object
     {
-        return Item::where('status', true)->get();
+        return $this->item->where('status', true)->get();
     }
 
-    public function reduceStock($cart)
+    public function reduceStock(object $cart): void
     {
-        return Item::find($cart->item_id)->update(['stock' => $cart->item->stock - $cart->amount]);  
+        $this->item->find($cart->item_id)->update(['stock' => $cart->item->stock - $cart->amount]);  
     }
 }

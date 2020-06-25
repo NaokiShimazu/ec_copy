@@ -14,7 +14,7 @@ class ResultController extends Controller
         $this->result_service = $result_service;
     }
 
-    public function display()
+    public function display(): object
     {
         $user = Auth::user()->name;     
         $results = $this->result_service->getResults($user);

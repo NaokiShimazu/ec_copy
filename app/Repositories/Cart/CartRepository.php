@@ -6,33 +6,37 @@ use Illuminate\Support\Facades\Auth;
 
 class CartRepository implements CartRepositoryInterface
 {
-    public function getItemInCart($item_id)
+    public function __construct(Cart $cart, Auth $auth)
     {
-        return Cart::where('item_id', $item_id)
+        $this->cart = $cart;
+    }
+
+    public function getItemInCart(int $item_id): ?object
+    {
+        return $this->cart->where('item_id', $item_id)
                    ->where('user_id', Auth::user()->id)
                    ->first();
     }
 
-    public function addNewItem($item_id)
+    public function addNewItem(int $item_id): void
     {
-        $cart = new Cart;
-        $cart->item_id = $item_id;
-        $cart->user_id = Auth::user()->id;
-        $cart->amount = 1;
-        return $cart->save();
+        $this->cart->item_id = $item_id;
+        $this->cart->user_id = Auth::user()->id;
+        $this->cart->amount = 1;
+        $this->cart->save();
     }
 
-    public function addOneMore($cart)
+    public function addOneMore(object $cart): void
     {
-       return $cart->increment('amount');
+        $cart->increment('amount');
     }
 
-    public function selectUserCart()
+    public function selectUserCart(): object
     {
-        return Cart::where('user_id', Auth::user()->id);
+        return $this->cart->where('user_id', Auth::user()->id);
     }
 
-    public function getSum()
+    public function getSum(): int
     {
         return $this->selectUserCart()
                     ->join('items', 'carts.item_id', '=', 'items.id')
@@ -42,18 +46,18 @@ class CartRepository implements CartRepositoryInterface
 
     }
 
-    public function updateCartAmount($item_id, $amount)
+    public function updateCartAmount(int $item_id, int $amount): void
     {
-        return $this->getItemInCart($item_id)->update(compact('amount'));
+        $this->getItemInCart($item_id)->update(compact('amount'));
     }
 
-    public function deleteCartItem($item_id)
+    public function deleteCartItem(int $item_id): void
     {
-        return $this->getItemInCart($item_id)->delete();
+        $this->getItemInCart($item_id)->delete();
     }
 
-    public function deleteFromCart($cart)
+    public function deleteFromCart(object $cart): void
     {
-        return $cart->delete();
+        $cart->delete();
     }
 }

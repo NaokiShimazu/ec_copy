@@ -16,14 +16,14 @@ class CartController extends Controller
         $this->result_service = $result_service;
     }
     
-    public function add($item_id)
+    public function add(int $item_id)
     {
         $this->cart_service->addToCart($item_id);
 
         return redirect(route('index'));
     }
 
-    public function display()
+    public function display(): object
     {   
         $carts = $this->cart_service->getUserCart();
         $sum = $this->cart_service->getCartSum();
@@ -31,21 +31,21 @@ class CartController extends Controller
         return view('cart', compact('carts', 'sum'));
     }
 
-    public function update($item_id, UpdateRequest $request)
+    public function update(int $item_id, UpdateRequest $request)
     {
         $this->cart_service->updateAmount($item_id, $request->new_quantity);
 
         return redirect(route('cart'));
     }
 
-    public function destroy($item_id)
+    public function destroy(int $item_id)
     {
         $cart = $this->cart_service->destroyFromCart($item_id);
 
         return redirect(route('cart'));
     }
 
-    public function purchase()
+    public function purchase(): object
     {
         $carts = $this->cart_service->getUserCart();
         $error_items = $this->cart_service->checkStock($carts);

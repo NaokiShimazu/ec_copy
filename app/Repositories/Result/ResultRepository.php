@@ -6,23 +6,27 @@ use Illuminate\Support\Facades\Auth;
 
 class ResultRepository implements ResultRepositoryInterface
 {
-    public function createResult($sum)
+    public function __construct(Result $result)
     {
-        $result = new Result;
-        $result->user_id = Auth::user()->id;
-        $result->sum = $sum;
-        $result->save();
-
-        return $result;
+        $this->result = $result;
     }
 
-    public function getAllResult()
-    {
-        return Result::latest()->get();
+    public function createResult(int $sum): object
+    {   
+        $this->result->user_id = Auth::user()->id;
+        $this->result->sum = $sum;
+        $this->result->save();
+
+        return $this->result;
     }
 
-    public function getUserResult()
+    public function getAllResult(): object
     {
-        return Result::where('user_id', Auth::user()->id)->latest()->get();
+        return $this->result->latest()->get();
+    }
+
+    public function getUserResult(): object
+    {
+        return $this->result->where('user_id', Auth::user()->id)->latest()->get();
     }
 }

@@ -9,13 +9,13 @@ use App\Services\ItemService;
 
 class ItemController extends Controller
 {
-    public function __construct(ItemService $service)
+    public function __construct(ItemService $item_service)
     {
         $this->middleware('auth');
-        $this->item_service = $service;
+        $this->item_service = $item_service;
     }
     
-    public function display()
+    public function display(): object
     {
         $items = $this->item_service->getAllItems();
 
@@ -36,21 +36,21 @@ class ItemController extends Controller
         return redirect(route('tool'));
     }
 
-    public function switch($item_id)
+    public function switch(int $item_id)
     {
         $this->item_service->switchStatus($item_id);
 
         return redirect(route('tool'));
     }
 
-    public function destroy($item_id)
+    public function destroy(int $item_id)
     {
         $this->item_service->destroyItem($item_id);
 
         return redirect(route('tool'));
     }
 
-    public function show()
+    public function show(): object
     {
         $items = $this->item_service->getOpenItems();
 
