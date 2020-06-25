@@ -4,8 +4,6 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-use \Auth;
-
 class Result extends Model
 {
     protected $fillable = [

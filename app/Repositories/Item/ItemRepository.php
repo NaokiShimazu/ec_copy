@@ -1,16 +1,16 @@
 <?php
-namespace App\Repositories;
+namespace App\Repositories\Item;
 
 use App\Item;
 
-class ItemRepository
+class ItemRepository implements ItemRepositoryInterface
 {
-    public static function getAllItems()
+    public function getAll()
     {
         return Item::all();
     }
 
-    public static function createNewItem($request)
+    public function createNewItem($request)
     {
         $item = new Item;
         $item->name = $request->name;
@@ -22,35 +22,35 @@ class ItemRepository
         return $item->save();
     }
 
-    public static function getItem($item_id)
+    public function getItem($item_id)
     {
         return Item::find($item_id);
     }
 
-    public static function updateItemStock($request)
+    public function updateItemStock($request)
     {
-        return self::getItem($request->item_id)
+        return $this->getItem($request->item_id)
                    ->update(['stock' => $request->new_quantity]);
     }
 
-    public static function switchItemStatus($item_id)
+    public function switchItemStatus($item_id)
     {
-        $item = self::getItem($item_id);
+        $item = $this->getItem($item_id);
 
         return $item->update(['status' => !$item->status]);
     }
 
-    public static function deleteItem($item_id)
+    public function deleteItem($item_id)
     {
-        return self::getItem($item_id)->delete();
+        return $this->getItem($item_id)->delete();
     }
 
-    public static function getOpenItems()
+    public static function getOpen()
     {
         return Item::where('status', true)->get();
     }
 
-    public static function reduceStock($cart)
+    public function reduceStock($cart)
     {
         return Item::find($cart->item_id)->update(['stock' => $cart->item->stock - $cart->amount]);  
     }

@@ -1,23 +1,32 @@
 <?php
 namespace App\Services;
 
-use App\Repositories\ItemRepository;
+use App\Repositories\Item\ItemRepositoryInterface AS ItemDataAccess;
 
 class ItemService
 {
+    public function __construct(ItemDataAccess $interface)
+    {
+        $this->item_repository = $interface;
+    }
 
-    public static function run($function)
+    public function getAllItems()
+    {
+        return $this->item_repository->getAll();
+    }
+
+    public function run($function)
     {
         if ($function){
             return session()->flash('success');
         }
     }
 
-    public static function insertNewItem($request)
+    public function insertNewItem($request)
     {
         $request->image = self::saveImage($request->file('image'));
 
-        return self::run(ItemRepository::createNewItem($request));
+        return $this->run($this->item_repository->createNewItem($request));
     }
 
     public static function saveImage($image)
@@ -32,19 +41,23 @@ class ItemService
         return $filename;
     }
 
-    public static function updateStock($request)
+    public function updateStock($request)
     {
-        return self::run(ItemRepository::updateItemStock($request));
+        return $this->run($this->item_repository->updateItemStock($request));
     }
 
-    public static function switchStatus($item_id)
+    public function switchStatus($item_id)
     {
-        return self::run(ItemRepository::switchItemStatus($item_id));
+        return $this->run($this->item_repository->switchItemStatus($item_id));
     }
 
-    public static function destroyItem($item_id)
+    public function destroyItem($item_id)
     {
-        return self::run(ItemRepository::deleteItem($item_id));
+        return $this->run($this->item_repository->deleteItem($item_id));
     }
 
+    public function getOpenItems()
+    {
+        return $this->item_repository->getOpen();
+    }
 }

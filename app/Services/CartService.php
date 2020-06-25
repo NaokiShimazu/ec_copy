@@ -1,74 +1,85 @@
 <?php
 namespace App\Services;
 
-use App\Repositories\ItemRepository;
-use App\Repositories\CartRepository;
+use App\Repositories\Item\ItemRepositoryInterface AS ItemDataAccess;
+use App\Repositories\Cart\CartRepositoryInterface AS CartDataAccess;
 
 class CartService
 {
-    public static function run($function)
+    public function __construct(CartDataAccess $cart_interface, ItemDataAccess $item_interface)
+    {
+        $this->cart_repository = $cart_interface;
+        $this->item_repository = $item_interface;
+    }
+
+    public function run($function)
     {
         if ($function){
             return session()->flash('success');
         }
     }
 
-
-    public static function addToCart($item_id)
+    public function addToCart($item_id)
     {
-        $repository = new CartRepository;
-
-        $cart = $repository->getItemInCart($item_id);
+        $cart = $this->cart_repository->getItemInCart($item_id);
 
         if (empty($cart)){
-            self::run($repository->addNewItem($item_id));
+            $this->run($this->cart_repository->addNewItem($item_id));
         } else{
-            self::run($repository->addOneMore($cart));
+            $this->run($this->cart_repository->addOneMore($cart));
         }
 
     }
-
-    public static function updateAmount($item_id, $amount)
+    
+    public function getUserCart()
     {
-        return self::run(CartRepository::updateCartAmount($item_id, $amount));
+        return $this->cart_repository->selectUserCart()->get();
     }
 
-    public static function destroyFromCart($item_id)
+    public function getCartSum()
     {
-        return self::run(CartRepository::deleteCartItem($item_id));
+        return $this->cart_repository->getSum();
     }
 
-    public static function checkStock($carts)
+    public function updateAmount($item_id, $amount)
     {
-        $err_msgs = [];
+        return $this->run($this->cart_repository->updateCartAmount($item_id, $amount));
+    }
+
+    public function destroyFromCart($item_id)
+    {
+        return $this->run($this->cart_repository->deleteCartItem($item_id));
+    }
+
+    public function checkStock($carts)
+    {
+        $error_items = [];
         foreach ($carts as $cart){
-            if (self::isNotEnough($cart)){
-                $err_msgs[] = $cart->item->name;
-                CartRepository::deleteFromCart($cart);
+            if ($this->isNotEnough($cart)){
+                $error_items[] = $cart->item->name;
+                $this->cart_repository->deleteFromCart($cart);
             }
         }
 
-        return $err_msgs;
+        return $error_items;
     }
 
-    public static function isNotEnough($cart)
+    public function isNotEnough($cart)
     {
-        $surplus = $cart->item->stock - $cart->amount;
-
-        if ($surplus < 0){
+        if ($cart->item->stock - $cart->amount < 0){
             return true;
         }else {
             return false;
         }
     }
 
-    public static function purchaseItem($carts)
+    public function purchaseItem($carts)
     {
         foreach ($carts as $cart){
-            if (!self::isNotEnough($cart)){
+            if (!$this->isNotEnough($cart)){
                 $purchases[] = $cart;
-                ItemRepository::reduceStock($cart);
-                CartRepository::deleteFromCart($cart);
+                $this->item_repository->reduceStock($cart);
+                $this->cart_repository->deleteFromCart($cart);
             }
         }
 

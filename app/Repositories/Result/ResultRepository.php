@@ -1,12 +1,12 @@
 <?php
-namespace App\Repositories;
+namespace App\Repositories\Result;
 
 use App\Result;
-use \Auth;
+use Illuminate\Support\Facades\Auth;
 
-class ResultRepository
+class ResultRepository implements ResultRepositoryInterface
 {
-    public static function createResult($sum)
+    public function createResult($sum)
     {
         $result = new Result;
         $result->user_id = Auth::user()->id;
