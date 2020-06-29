@@ -1,8 +1,10 @@
 <?php
 namespace App\Services;
 
+use App\Cart;
 use App\Repositories\Item\ItemRepositoryInterface;
 use App\Repositories\Cart\CartRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class CartService
 {
@@ -24,15 +26,16 @@ class CartService
         $cart = $this->cart_repository->getItemInCart($item_id);
 
         if (empty($cart)) {
-            $this->add_flash($this->cart_repository->addNewItem($item_id));
+            $add_function = $this->cart_repository->addNewItem($item_id);
         } else {
-            $this->add_flash($this->cart_repository->addOneMore($cart));
+            $add_function = $this->cart_repository->addOneMore($cart);
         }
+        $this->add_flash($add_function);
     }
     
-    public function getUserCart(): object
+    public function getUserCart(): Collection
     {
-        return $this->cart_repository->selectUserCart()->get();
+        return $this->cart_repository->getUserCart();
     }
 
     public function getCartSum(): int
@@ -50,7 +53,7 @@ class CartService
         $this->add_flash($this->cart_repository->deleteCartItem($item_id));
     }
 
-    public function checkStock(object $carts): array
+    public function checkStock(Collection $carts): array
     {
         $error_items = [];
         foreach ($carts as $cart) {
@@ -63,12 +66,12 @@ class CartService
         return $error_items;
     }
 
-    public function isNotEnough(object $cart): bool
+    public function isNotEnough(Cart $cart): bool
     {
         return ($cart->item->stock - $cart->amount) < 0;
     }
 
-    public function purchaseItem(object $carts): array
+    public function purchaseItem(Collection $carts): array
     {
         foreach ($carts as $cart){
             if (!$this->isNotEnough($cart)){

@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Requests\UpdateRequest;
 use App\Services\CartService;
 use App\Services\ResultService;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class CartController extends Controller
 {
@@ -16,14 +19,14 @@ class CartController extends Controller
         $this->result_service = $result_service;
     }
     
-    public function add(int $item_id)
+    public function add(int $item_id): RedirectResponse
     {
         $this->cart_service->addToCart($item_id);
 
         return redirect(route('index'));
     }
 
-    public function display(): object
+    public function display(): View
     {   
         $carts = $this->cart_service->getUserCart();
         $sum = $this->cart_service->getCartSum();
@@ -31,21 +34,21 @@ class CartController extends Controller
         return view('cart', compact('carts', 'sum'));
     }
 
-    public function update(int $item_id, UpdateRequest $request)
+    public function update(int $item_id, UpdateRequest $request): RedirectResponse
     {
         $this->cart_service->updateAmount($item_id, $request->new_quantity);
 
         return redirect(route('cart'));
     }
 
-    public function destroy(int $item_id)
+    public function destroy(int $item_id): RedirectResponse
     {
         $cart = $this->cart_service->destroyFromCart($item_id);
 
         return redirect(route('cart'));
     }
 
-    public function purchase(): object
+    public function purchase(): View
     {
         $carts = $this->cart_service->getUserCart();
         $error_items = $this->cart_service->checkStock($carts);

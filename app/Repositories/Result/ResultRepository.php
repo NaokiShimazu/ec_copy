@@ -3,6 +3,7 @@ namespace App\Repositories\Result;
 
 use App\Result;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Collection;
 
 class ResultRepository implements ResultRepositoryInterface
 {
@@ -11,21 +12,22 @@ class ResultRepository implements ResultRepositoryInterface
         $this->result = $result;
     }
 
-    public function createResult(int $sum): object
+    public function createResult(int $sum): Result
     {   
-        $this->result->user_id = Auth::user()->id;
-        $this->result->sum = $sum;
-        $this->result->save();
+        $result = app(Result::class);
+        $result->user_id = Auth::user()->id;
+        $result->sum = $sum;
+        $result->save();
 
-        return $this->result;
+        return $result;
     }
 
-    public function getAllResult(): object
+    public function getAllResult(): Collection
     {
         return $this->result->latest()->get();
     }
 
-    public function getUserResult(): object
+    public function getUserResult(): Collection
     {
         return $this->result->where('user_id', Auth::user()->id)->latest()->get();
     }

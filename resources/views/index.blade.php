@@ -3,19 +3,15 @@
 @section('title', '商品一覧')
 
 @section('content')
-
-<h1>商品一覧</h1>
-
-<section>
-    <form action="{{ url('/logout') }}" method="post">
-        {{ csrf_field() }}
-        <button type="submit">ログアウト</button>
-    </form>
-
-    <a href="{{ route('cart') }}">カートへ</a>
-
-</section>
-
+@section('nav_title', '商品一覧')
+@section('nav_content')
+<li>
+    <a class="nav_link" href="{{ route('cart') }}">カートへ</a>
+</li>
+<li>
+    <a class="nav_link" href="{{ route('result') }}">購入履歴へ</a>
+</li>
+@endsection
 @foreach ($errors->all() as $error)
 <p>{{ $error }}</p>
 @endforeach
@@ -25,30 +21,37 @@
 @endif
 
 <section>
-    <ul>
+    <ul class="list-group" style="display.flex">
         @forelse ($items as $item)
-        <li>
-            <div>
-                <img src="{{ asset('storage/photos/' . $item->image) }}">
-            </div>
-            <div>
-                <span>{{ $item->name }}: </span>
-                <span>{{ $item->price }}円</span>
-            </div>
-            <div>
-                <form action="{{ route('cart.add', ['item_id' => $item->id]) }}" method="post">
-                    {{ csrf_field() }}
-                    @if(intval($item->stock) > 0)
-                    <input type="submit" value="カートに追加">
-                    @else
-                    <p class="soldOut">売り切れ</p>
-                    @endif
-                </form>
-            </div>
-        </li>
-        @empty
-        <p>商品はありません</p>
-        @endforelse
+        @if(intval($item->stock) < 0) <li class="list-group-item disabled">
+            @else
+            <li class="list-group-item" style="display: flex;">
+                @endif
+                <div style="width: 30%;">
+                    <div>
+                        <img src="{{ asset('storage/photos/' . $item->image) }}">
+                    </div>
+                    <div>
+                        <span>{{ $item->name }}: </span>
+                        <span class="price">{{ $item->price }}円</span>
+                    </div>
+                </div>
+                <span class="item">
+                    <form action="{{ route('cart.add', ['item_id' => $item->id]) }}" method="post">
+                        {{ csrf_field() }}
+                        @if(intval($item->stock) > 0)
+                        <button type="submit" class="btn btn-primary">
+                            <i class="material-icons">shopping_cart</i>
+                        </button>
+                        @else
+                        <p style="color: red">売り切れ</p>
+                        @endif
+                    </form>
+                </span>
+            </li>
+            @empty
+            <p>商品はありません</p>
+            @endforelse
     </ul>
 </section>
 

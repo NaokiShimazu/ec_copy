@@ -3,19 +3,20 @@
 @section('title', 'あなたの購入履歴')
 
 @section('content')
+
 @if ($user === 'admin')
-
-<h1>すべての購入履歴</h1>
-
-@else    
-
-<h1>{{ $user }}さんの購入履歴</h1>
-
+@section('nav_title', '全ての購入履歴')
+@else
+@section('nav_title', $user . 'さんの購入履歴')
 @endif
 
-<a href="{{ route('tool') }}">管理ページへ</a>
+@section('nav_content')
+    <li>
+    <a class="nav_link" href="{{ route('tool') }}">商品管理ページへ</a>
+    </li>
+@endsection
 
-<table>
+<table class="table">
     <tr>
         <th>注文番号</th>
         <th>購入日</th>
@@ -27,11 +28,13 @@
     <tr>
         <td>{{ $result->id }}</td>
         <td>{{ $result->created_at }}</td>
-        <td>{{ $result->sum }}円</td>
+        <td class="price">{{ $result->sum }}円</td>
         <td>
             <form action="{{ route('detail', ['result_id' => $result->id]) }}" method="post">
                 {{ csrf_field() }}
-                <input type="submit" value="詳細へ">
+                <button type="submit" class="btn btn-primary">
+                    <i class="material-icons">article</i>
+                </button>
             </form>
         </td>
     </tr>

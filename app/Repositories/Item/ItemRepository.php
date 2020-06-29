@@ -2,6 +2,10 @@
 namespace App\Repositories\Item;
 
 use App\Item;
+use App\Cart;
+use App\Http\Requests\InsertRequest;
+use App\Http\Requests\UpdateRequest;
+use Illuminate\Database\Eloquent\Collection;
 
 class ItemRepository implements ItemRepositoryInterface
 {
@@ -10,51 +14,55 @@ class ItemRepository implements ItemRepositoryInterface
         $this->item = $item;
     }
 
-    public function getAll(): object
+    public function getAll(): Collection
     {
         return $this->item->all();
     }
 
-    public function createNewItem($request): void
+    public function createNewItem(InsertRequest $request): Item
     {
-        $this->item->name = $request->name;
-        $this->item->price = $request->price;
-        $this->item->stock = $request->stock;
-        $this->item->status = $request->status;
-        $this->item->image = $request->image;
-        $this->item->save();
+        $item = app(Item::class);
+        $item->name = $request->name;
+        $item->price = $request->price;
+        $item->stock = $request->stock;
+        $item->status = $request->status;
+        $item->image = $request->image;
+        $item->save();
+        return $item;
     }
 
-    public function getItem(int $item_id): object
+    public function getItem(int $item_id): Item
     {
         return $this->item->find($item_id);
     }
 
-    public function updateItemStock(object $request): void
+    public function updateItemStock(UpdateRequest $request): bool
     {
-        $this->getItem($request->item_id)
-                   ->update(['stock' => $request->new_quantity]);
+        if ($this->getItem($request->item_id)->update(['stock' => $request->new_quantity])) {
+
+            return true;
+        }
     }
 
-    public function switchItemStatus(int $item_id): void
+    public function switchItemStatus(int $item_id): bool
     {
         $item = $this->getItem($item_id);
 
-        $item->update(['status' => !$item->status]);
+        return $item->update(['status' => !$item->status]);
     }
 
-    public function deleteItem(int $item_id): void
+    public function deleteItem(int $item_id): bool
     {
-        $this->getItem($item_id)->delete();
+        return $this->getItem($item_id)->delete();
     }
 
-    public function getOpen(): object
+    public function getOpen(): Collection
     {
         return $this->item->where('status', true)->get();
     }
 
-    public function reduceStock(object $cart): void
+    public function reduceStock(Cart $cart): int
     {
-        $this->item->find($cart->item_id)->update(['stock' => $cart->item->stock - $cart->amount]);  
+        return $this->item->find($cart->item_id)->update(['stock' => $cart->item->stock - $cart->amount]);  
     }
 }

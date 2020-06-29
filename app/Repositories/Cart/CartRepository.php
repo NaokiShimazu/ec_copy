@@ -3,6 +3,8 @@ namespace App\Repositories\Cart;
 
 use App\Cart;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class CartRepository implements CartRepositoryInterface
 {
@@ -11,31 +13,40 @@ class CartRepository implements CartRepositoryInterface
         $this->cart = $cart;
     }
 
-    public function getItemInCart(int $item_id): ?object
+    public function getItemInCart(int $item_id): ?Cart
     {
         return $this->cart->where('item_id', $item_id)
                    ->where('user_id', Auth::user()->id)
                    ->first();
     }
 
-    public function addNewItem(int $item_id): void
+    public function addNewItem(int $item_id): bool
     {
-        $this->cart->item_id = $item_id;
-        $this->cart->user_id = Auth::user()->id;
-        $this->cart->amount = 1;
-        $this->cart->save();
+        $cart = app(Cart::class);
+        $cart->item_id = $item_id;
+        $cart->user_id = Auth::user()->id;
+        $cart->amount = 1;
+        
+        return $cart->save();
     }
 
-    public function addOneMore(object $cart): void
+    public function addOneMore(Cart $cart): bool
     {
-        $cart->increment('amount');
+        if ($cart->increment('amount')) {
+
+            return true;
+        }
     }
 
-    public function selectUserCart(): object
+    private function selectUserCart(): Builder
     {
         return $this->cart->where('user_id', Auth::user()->id);
     }
 
+    public function getUserCart(): Collection
+    {
+        return $this->selectUserCart()->get();
+    }
     public function getSum(): int
     {
         return $this->selectUserCart()
@@ -46,18 +57,21 @@ class CartRepository implements CartRepositoryInterface
 
     }
 
-    public function updateCartAmount(int $item_id, int $amount): void
+    public function updateCartAmount(int $item_id, int $amount): bool
     {
-        $this->getItemInCart($item_id)->update(compact('amount'));
+        if ($this->getItemInCart($item_id)->update(compact('amount'))) {
+
+            return true;
+        }
     }
 
-    public function deleteCartItem(int $item_id): void
+    public function deleteCartItem(int $item_id): bool
     {
-        $this->getItemInCart($item_id)->delete();
+        return $this->getItemInCart($item_id)->delete();
     }
 
-    public function deleteFromCart(object $cart): void
+    public function deleteFromCart(Cart $cart): bool
     {
-        $cart->delete();
+        return $cart->delete();
     }
 }

@@ -1,6 +1,10 @@
 <?php
 namespace App\Services;
 
+use App\Item;
+use App\Http\Requests\InsertRequest;
+use App\Http\Requests\UpdateRequest;
+use Illuminate\Database\Eloquent\Collection;
 use App\Repositories\Item\ItemRepositoryInterface;
 
 class ItemService
@@ -10,7 +14,7 @@ class ItemService
         $this->item_repository = $item_repository;
     }
 
-    public function getAllItems(): object
+    public function getAllItems(): Collection
     {
         return $this->item_repository->getAll();
     }
@@ -22,13 +26,14 @@ class ItemService
         }
     }
 
-    public function insertNewItem(object $request): void
+    public function insertNewItem(InsertRequest $request): void
     {
         $request->image = $this->saveImage($request->file('image'));
-        $this->add_flash($this->item_repository->createNewItem($request));
+        $insert_function = $this->item_repository->createNewItem($request);
+        $this->add_flash($insert_function);
     }
 
-    public function saveImage(object $image): string
+    private function saveImage(object $image): string
     {
         $filename = '';
         if (isset($image)) {
@@ -40,22 +45,25 @@ class ItemService
         return $filename;
     }
 
-    public function updateStock(object $request): void
+    public function updateStock(UpdateRequest $request): void
     {
-        $this->add_flash($this->item_repository->updateItemStock($request));
+        $update_function = $this->item_repository->updateItemStock($request);
+        $this->add_flash($update_function);
     }
 
     public function switchStatus(int $item_id): void
     {
-        $this->add_flash($this->item_repository->switchItemStatus($item_id));
+        $switch_function = $this->item_repository->switchItemStatus($item_id);
+        $this->add_flash($switch_function);
     }
 
     public function destroyItem(int $item_id): void
     {
-        $this->add_flash($this->item_repository->deleteItem($item_id));
+        $delete_function = $this->item_repository->deleteItem($item_id);
+        $this->add_flash($delete_function);
     }
 
-    public function getOpenItems(): object
+    public function getOpenItems(): Collection
     {
         return $this->item_repository->getOpen();
     }
