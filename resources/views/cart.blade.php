@@ -4,7 +4,7 @@
 
 @section('content')
 @section('nav_title', 'カート内の商品一覧')
-    
+
 @section('nav_content')
 <li class="nav-item">
     <a class="nav_link" href="{{ route('result') }}">購入履歴へ</a>
@@ -37,14 +37,39 @@
         <td>{{ $cart->item->name }}</td>
         <td class="price">{{ $cart->item->price }}円</td>
         <td>
-            <form action="{{ route('cart.update', ['item_id' => $cart->item->id]) }}" method="post">
-                {{ csrf_field() }}
-                {{ method_field('put') }}
-                <input type="number" name="new_quantity" value="{{ $cart->amount }}">個
-                <button type="submit" class="btn btn-success">
-                    <i class="material-icons">autorenew</i>
-                </button>
-            </form>
+            <span>{{ $cart->amount }}個</span>
+            <button type="button" class="btn btn-success" data-toggle="modal"
+                data-target="#amount-{{ $cart->item->id }}-modal">
+                <i class="material-icons">edit</i>
+            </button>
+            <div class="modal fade" id="amount-{{ $cart->item->id }}-modal" tabindex="-1" role="dialog"
+                aria-labelledby="amount-{{ $cart->item->id }}-modal-title" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="amount-{{ $cart->item->id }}-modal-title">数量変更</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ route('cart.update', ['item_id' => $cart->item->id]) }}" method="post">
+                                {{ csrf_field() }}
+                                {{ method_field('put') }}
+                                <input type="number" name="new_quantity" value="{{ $cart->amount }}">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                <i class="material-icons">cancel</i>
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="material-icons">check</i>
+                            </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </td>
         <td>
             <form action="{{ route('cart.delete' , ['item_id' => $cart->item->id]) }}" method="post">

@@ -65,4 +65,24 @@ class ItemRepository implements ItemRepositoryInterface
     {
         return $this->item->find($cart->item_id)->update(['stock' => $cart->item->stock - $cart->amount]);  
     }
+    public function sortItems($request)
+    {
+        $items = $this->item;
+        if (!empty($request->lowest_price)) {
+            $items = $items->where('price', '>=', $request->lowest_price);
+        }
+        if (!empty($request->highest_price)) {
+            $items = $items->where('price', '<=', $request->highest_price);
+        }
+        if (!empty($request->lowest_stock)) {
+            $items = $items->where('stock', '>=', $request->lowest_stock);
+        }
+        if (!empty($request->highest_stock)) {
+            $items = $items->where('stock', '<=', $request->highest_stock);
+        }
+        if ($request->status === '1' or $request->status === '0') {
+            $items = $items->where('status', $request->status);
+        }
+        return $items->orderBy($request->sort_method, $request->order)->get();
+    }
 }

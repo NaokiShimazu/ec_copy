@@ -67,4 +67,9 @@ class ItemService
     {
         return $this->item_repository->getOpen();
     }
+
+    public function sortByRequest($request)
+    {
+        return $items = $this->item_repository->sortItems($request);
+    }
 }

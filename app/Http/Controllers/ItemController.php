@@ -59,4 +59,10 @@ class ItemController extends Controller
         return view('index', compact('items'));
     }
 
+    public function sort(Request $request): View
+    {
+        $items = $this->item_service->sortByRequest($request);
+
+        return view('tool', compact('items'));
+    }
 }

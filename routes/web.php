@@ -24,6 +24,7 @@ Route::post('/tool/insert', 'ItemController@insert')->name('tool.insert');
 Route::put('/tool/update/{item_id}', 'ItemController@update')->name('tool.update');
 Route::put('/tool/switch/{item_id}', 'ItemController@switch')->name('tool.switch');
 Route::delete('/tool/delete/{item_id}', 'ItemController@destroy')->name('tool.delete');
+Route::options('/tool', 'ItemController@sort')->name('tool.options');
 
 Route::get('/index', 'ItemController@show')->name('index');
 
