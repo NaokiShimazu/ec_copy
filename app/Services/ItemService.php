@@ -1,38 +1,42 @@
 <?php
 namespace App\Services;
 
-use App\Repositories\Item\ItemRepositoryInterface AS ItemDataAccess;
+use App\Item;
+use App\Http\Requests\InsertRequest;
+use App\Http\Requests\UpdateRequest;
+use Illuminate\Database\Eloquent\Collection;
+use App\Repositories\Item\ItemRepositoryInterface;
 
 class ItemService
 {
-    public function __construct(ItemDataAccess $interface)
+    public function __construct(ItemRepositoryInterface $item_repository)
     {
-        $this->item_repository = $interface;
+        $this->item_repository = $item_repository;
     }
 
-    public function getAllItems()
+    public function getAllItems(): Collection
     {
         return $this->item_repository->getAll();
     }
 
-    public function run($function)
+    public function add_flash($function): void
     {
-        if ($function){
-            return session()->flash('success');
+        if ($function) {
+            session()->flash('success');
         }
     }
 
-    public function insertNewItem($request)
+    public function insertNewItem(InsertRequest $request): void
     {
-        $request->image = self::saveImage($request->file('image'));
-
-        return $this->run($this->item_repository->createNewItem($request));
+        $request->image = $this->saveImage($request->file('image'));
+        $insert_function = $this->item_repository->createNewItem($request);
+        $this->add_flash($insert_function);
     }
 
-    public static function saveImage($image)
+    private function saveImage(object $image): string
     {
         $filename = '';
-        if (isset($image)){
+        if (isset($image)) {
             $ext = $image->guessExtension();
             $filename = str_random(20) . ".{$ext}";
             $image->storeAs('photos', $filename, 'public');
@@ -41,22 +45,25 @@ class ItemService
         return $filename;
     }
 
-    public function updateStock($request)
+    public function updateStock(UpdateRequest $request): void
     {
-        return $this->run($this->item_repository->updateItemStock($request));
+        $update_function = $this->item_repository->updateItemStock($request);
+        $this->add_flash($update_function);
     }
 
-    public function switchStatus($item_id)
+    public function switchStatus(int $item_id): void
     {
-        return $this->run($this->item_repository->switchItemStatus($item_id));
+        $switch_function = $this->item_repository->switchItemStatus($item_id);
+        $this->add_flash($switch_function);
     }
 
-    public function destroyItem($item_id)
+    public function destroyItem(int $item_id): void
     {
-        return $this->run($this->item_repository->deleteItem($item_id));
+        $delete_function = $this->item_repository->deleteItem($item_id);
+        $this->add_flash($delete_function);
     }
 
-    public function getOpenItems()
+    public function getOpenItems(): Collection
     {
         return $this->item_repository->getOpen();
     }

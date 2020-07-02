@@ -2,12 +2,19 @@
 namespace App\Repositories\Detail;
 
 use App\Detail;
+use App\Cart;
+use Illuminate\Database\Eloquent\Collection;
 
 class DetailRepository implements DetailRepositoryInterface
 {
-    public function createDetail($result_id, $cart)
+    public function __construct(Detail $detail)
     {
-        $detail = new Detail;
+        $this->detail = $detail;
+    }
+
+    public function createDetail(int $result_id, Cart $cart): Detail
+    {
+        $detail = app(Detail::class);
         $detail->result_id = $result_id;
         $detail->cart_id = $cart->id;
         $detail->subtotal = $cart->item->price * $cart->amount;
@@ -18,9 +25,9 @@ class DetailRepository implements DetailRepositoryInterface
         return $detail;
     }
     
-    public function selectDetails($result_id)
+    public function getDetails(int $result_id): Collection
     {
-        return Detail::where('result_id', $result_id);
+        return $this->detail->where('result_id', $result_id)->get();
     }
 
 }

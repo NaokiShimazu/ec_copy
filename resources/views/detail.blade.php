@@ -3,11 +3,15 @@
 @section('title', '購入詳細')
 
 @section('content')
-<h1>購入詳細</h1>
 
-<a href="{{ route('result') }}">注文履歴へ</a>
+@section('nav_title', '購入明細')
 
-<table>
+@section('nav_content')
+<li>
+    <a class="nav_link" href="{{ route('result') }}">購入履歴へ</a>
+</li>
+@endsection
+<table class="table">
     <tr>
         <th>商品名</th>
         <th>価格</th>
@@ -17,7 +21,7 @@
     @forelse ($details as $detail)
     <tr>
         <td>{{ $detail->item->name }}</td>
-        <td>{{ $detail->item->price }}円</td>
+        <td class="price">{{ $detail->item->price }}円</td>
         <td>{{ $detail->amount }}個</td>
         <td>{{ $detail->subtotal }}円</td>
     </tr>

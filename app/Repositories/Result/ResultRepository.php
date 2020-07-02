@@ -3,12 +3,18 @@ namespace App\Repositories\Result;
 
 use App\Result;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Collection;
 
 class ResultRepository implements ResultRepositoryInterface
 {
-    public function createResult($sum)
+    public function __construct(Result $result)
     {
-        $result = new Result;
+        $this->result = $result;
+    }
+
+    public function createResult(int $sum): Result
+    {   
+        $result = app(Result::class);
         $result->user_id = Auth::user()->id;
         $result->sum = $sum;
         $result->save();
@@ -16,13 +22,13 @@ class ResultRepository implements ResultRepositoryInterface
         return $result;
     }
 
-    public function getAllResult()
+    public function getAllResult(): Collection
     {
-        return Result::latest()->get();
+        return $this->result->latest()->get();
     }
 
-    public function getUserResult()
+    public function getUserResult(): Collection
     {
-        return Result::where('user_id', Auth::user()->id)->latest()->get();
+        return $this->result->where('user_id', Auth::user()->id)->latest()->get();
     }
 }
