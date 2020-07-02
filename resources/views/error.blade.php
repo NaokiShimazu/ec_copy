@@ -4,8 +4,8 @@
 
 @section('content')
 <h1>購入を中断しました</h1>
-@forelse ($err_msgs as $err_msg)
-<p>在庫が足りません: {{ $err_msg }}</p>
+@forelse ($error_items as $error_item)
+<p>在庫が足りません: {{ $error_item }}</p>
 @empty
 <p>エラーはありません</p>
 @endforelse

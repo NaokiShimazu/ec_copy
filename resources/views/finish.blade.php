@@ -3,20 +3,23 @@
 @section('title', '購入完了')
 
 @section('content')
-<h1>お買い上げありがとうございます</h1>
 
-<form action="{{ url('/logout') }}" method="post">
-    {{ csrf_field() }}
-    <button type="submit">ログアウト</button>
-</form>
+@section('nav_title', 'お買い上げありがとうございます')
 
-<a href="{{ route('index') }}">商品一覧へ</a>
+@section('nav_content')
+<li>
+    <a class="nav_link" href="{{ route('index') }}">商品一覧へ</a>
+</li>
+<li>
+    <a class="nav_link" href="{{ route('result') }}">購入履歴へ</a>
+</li>
+@endsection
 
-@foreach ($err_msgs as $err_msg)
-<p>在庫不足のため購入できませんでした: {{ $err_msg }}</p>
+@foreach ($error_items as $error_item)
+<p>在庫不足のため購入できませんでした: {{ $error_item }}</p>
 @endforeach
 
-<table>
+<table class="table">
     <tr>
         <th>商品画像</th>
         <th>商品名</th>
@@ -25,9 +28,9 @@
     </tr>
     @forelse ($purchases as $purchase)
     <tr>
-        <td><img src="{{ asset('storage/photos/' . $purchase->item->image) }}"></td>
+        <td><img src="{{ asset('storage/photos/' . $purchase->item->image) }}" style="height: 80px"></td>
         <td>{{ $purchase->item->name }}</td>
-        <td>{{ $purchase->item->price }}円</td>
+        <td class="price">{{ $purchase->item->price }}円</td>
         <td>{{ $purchase->amount }}個</td>
     </tr>
     @empty
@@ -35,7 +38,7 @@
     @endforelse
 </table>
 
-<div>
-    合計: {{ $sum }}円
+<div class="text-center">
+    合計: <span class="price">{{ $sum }}円</span>
 </div>
 @endsection

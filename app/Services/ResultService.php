@@ -2,32 +2,40 @@
 namespace App\Services;
 
 use App\Result;
-use \Auth;
 use App\Services\CartService;
-use App\Repositories\ResultRepository;
-use App\Repositories\DetailRepository;
+use App\Repositories\Result\ResultRepositoryInterface;
+use App\Repositories\Detail\DetailRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 
 class ResultService
 {
-    public static function createResultAndDetail($carts, $sum)
-    {
-        $result = ResultRepository::createResult($sum);
-
-        foreach ($carts as $cart){
-            if (!CartService::isNotEnough($cart)){
-                DetailRepository::createDetail($result->id, $cart);
-            }
-        }
+    public function __construct(
+        CartService $cart_service,
+        ResultRepositoryInterface $result_repository, 
+        DetailRepositoryInterface $detail_repository
+    ){
+        $this->cart_service = $cart_service;
+        $this->result_repository = $result_repository;
+        $this->detail_repository = $detail_repository;
     }
 
-    public static function getResults($user)
+    public function createResultAndDetail(object $carts, int $sum): array
     {
-        $repository = new ResultRepository;
+        $result = $this->result_repository->createResult($sum);
+        foreach ($carts as $cart) {
+            if (!$this->cart_service->isNotEnough($cart)){
+                $details[] = $this->detail_repository->createDetail($result->id, $cart);
+            }
+        }
+        return $details;
+    }
 
-        if ($user === 'admin'){
-            return $repository->getAllResult();
-        } else{
-            return $repository->getUserResult();
+    public function getResults($user): Collection
+    {
+        if ($user === 'admin') {
+            return $this->result_repository->getAllResult();
+        } else {
+            return $this->result_repository->getUserResult();
         }
     }
 }

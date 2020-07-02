@@ -4,13 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\DetailService;
-use App\Repositories\DetailRepository;
+use Illuminate\View\View;
 
 class DetailController extends Controller
 {
-    public function display($result_id)
+    public function __construct(DetailService $detail_service)
     {
-        $details = DetailRepository::getDetails($result_id);
+        $this->middleware('auth');
+        $this->detail_service = $detail_service;
+    }
+
+    public function display(int $result_id): View
+    {
+        $details = $this->detail_service->getDetails($result_id);
 
         return view('detail', compact('details'));
     }
